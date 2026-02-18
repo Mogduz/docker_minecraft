@@ -2,12 +2,6 @@ services:
   minecraft:
     build:
       context: .
-      args:
-        MC_VERSION: ${MC_VERSION}
-        FABRIC_LOADER_VERSION: ${FABRIC_LOADER_VERSION}
-        FABRIC_INSTALLER_VERSION: ${FABRIC_INSTALLER_VERSION}
-        FORGE_VERSION: ${FORGE_VERSION}
-        NEOFORGE_VERSION: ${NEOFORGE_VERSION}
     image: ${IMAGE_NAME}:${IMAGE_TAG}
     container_name: ${CONTAINER_NAME}
     ports:
@@ -17,11 +11,11 @@ services:
       SERVER_TYPE: "${SERVER_TYPE}"
       JVM_OPTS: "${JVM_OPTS}"
     volumes:
-      - ${HOST_CONFIG_DIR}:/data/config
-      - ${HOST_WORLD_DIR}:/data/world
-      - ${HOST_MODS_DIR}:/data/mods
-      - ${HOST_RESOURCEPACKS_DIR}:/data/resourcepacks
-      - ${HOST_LOGS_DIR}:/data/logs
+      - ./minecraft/config:/data/config
+      - ./minecraft/world:/data/world
+      - ./minecraft/mods:/data/mods
+      - ./minecraft/resourcepacks:/data/resourcepacks
+      - ./minecraft/logs:/data/logs
     restart: ${RESTART_POLICY}
     stdin_open: true
     tty: true
