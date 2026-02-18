@@ -2,7 +2,7 @@
 
 Minecraft Java Server `1.21.11` auf `ubuntu:24.04` mit persistenter Auslagerung von Config, World, Mods, Resourcepacks und Logs.
 Beim Build werden Artefakte fuer `vanilla`, `fabric`, `forge` und `neoforge` heruntergeladen und vorgehalten.
-Alle anpassbaren Variablen liegen in `.env`.
+Compose-Variablen liegen in `.env`.
 
 ## Start
 
@@ -10,14 +10,23 @@ Alle anpassbaren Variablen liegen in `.env`.
 docker compose up -d --build
 ```
 
+Health-Status pruefen:
+
+```bash
+docker ps
+```
+
+Beim Start steht der Container zunaechst auf `health: starting`, im Normalbetrieb auf `Up ... (healthy)` bei laufendem (`running`) Container.
+
 ## Konfiguration ueber `.env`
 
 Passe in `.env` bei Bedarf an:
 
-- Build/Versionen: `MC_VERSION`, `FABRIC_LOADER_VERSION`, `FABRIC_INSTALLER_VERSION`, `FORGE_VERSION`, `NEOFORGE_VERSION`
 - Runtime: `SERVER_TYPE`, `JVM_OPTS`, `EULA`, `MC_PORT`, `CONTAINER_NAME`
 - Image: `IMAGE_NAME`, `IMAGE_TAG`
-- Mounts: `HOST_CONFIG_DIR`, `HOST_WORLD_DIR`, `HOST_MODS_DIR`, `HOST_RESOURCEPACKS_DIR`, `HOST_LOGS_DIR`
+- Mounts sind fest in `docker-compose.yml` gesetzt (`./minecraft/...`).
+
+Build-Versionen (`MC_VERSION`, `FABRIC_*`, `FORGE_VERSION`, `NEOFORGE_VERSION`) bleiben in der `Dockerfile`.
 
 ## Servertyp waehlen
 
