@@ -75,8 +75,10 @@ RUN set -eux; \
 
 COPY start-minecraft.sh /usr/local/bin/start-minecraft.sh
 COPY mc-cmd.sh /usr/local/bin/mc-cmd
+COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/start-minecraft.sh
 RUN chmod +x /usr/local/bin/mc-cmd
+RUN chmod +x /usr/local/bin/healthcheck.sh
 RUN set -eux; \
     for c in \
       help stop reload list say seed me msg teammsg tm tell w \
@@ -101,6 +103,8 @@ WORKDIR /data
 
 EXPOSE 25565
 VOLUME ["/data/config", "/data/world", "/data/mods", "/data/resourcepacks", "/data/logs"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 CMD ["/usr/local/bin/healthcheck.sh"]
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/usr/local/bin/start-minecraft.sh"]
