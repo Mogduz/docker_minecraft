@@ -54,6 +54,11 @@ Fest verdrahtete Build-Versionen in `1.21.11/Dockerfile`:
 - `FORGE_FULL_VERSION=1.21.11-61.1.1`
 - `NEOFORGE_VERSION=21.11.38-beta`
 
+Kompatibilitaet zu Vanilla `1.21.11`:
+- Fabric: kompatibel und stabil
+- Forge: kompatibel und stabil
+- NeoForge: kompatibel, fuer die `21.11.x`-Reihe aktuell nur `beta`-Builds verfuegbar
+
 ## RCON (optional, per Profil)
 
 Standardmaessig ist kein zusaetzlicher RCON-Port nach aussen offen.
