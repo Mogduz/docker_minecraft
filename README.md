@@ -44,17 +44,15 @@ Wichtige Runtime-Variablen:
 
 Image/Container:
 
-- `IMAGE_NAME`
-- `IMAGE_TAG`
+- `Container-Image: minecraft-java:1.21.11` (fest)
 - `RESTART_POLICY`
 
-Build-Argumente (werden via Compose in den Build durchgereicht):
-
-- `MC_VERSION`
-- `FABRIC_LOADER_VERSION`
-- `FABRIC_INSTALLER_VERSION`
-- `FORGE_VERSION`
-- `NEOFORGE_VERSION`
+Fest verdrahtete Build-Versionen in `1.21.11/Dockerfile`:
+- `MC_VERSION=1.21.11`
+- `FABRIC_LOADER_VERSION=0.18.4`
+- `FABRIC_INSTALLER_VERSION=1.1.1`
+- `FORGE_FULL_VERSION=1.21.11-61.1.1`
+- `NEOFORGE_VERSION=21.11.38-beta`
 
 ## RCON (optional, per Profil)
 
@@ -78,16 +76,13 @@ Dafuer in `.env` mindestens setzen:
 
 Bind-Mounts:
 
-- `./minecraft/config:/data/config`
-- `./minecraft/world:/data/world`
-- `./minecraft/mods:/data/mods`
-- `./minecraft/resourcepacks:/data/resourcepacks`
-- `./minecraft/logs:/data/logs`
+- `./1.21.11/minecraft/...`
+- `./1.21.11/scripts/...`
 
 Empfohlene Repo-Hygiene:
 
-- Persistente Laufzeitdaten unter `minecraft/` sind in `.gitignore` ausgenommen.
-- Auch `minecraft/config` ist ignoriert (enthaelt benutzerspezifische Daten wie `server.properties`, `ops.json`, Whitelist, usw.).
+- Persistente Laufzeitdaten unter `<version>/minecraft/` sind in `.gitignore` ausgenommen.
+- Auch `<version>/minecraft/config` ist ignoriert (enthaelt benutzerspezifische Daten wie `server.properties`, `ops.json`, Whitelist, usw.).
 - Nur `.gitkeep`-Dateien bleiben versioniert, damit die Ordnerstruktur erhalten bleibt.
 - `.env` bleibt lokal und wird nicht eingecheckt.
 - `.env.example` ist die versionierte Vorlage.
@@ -122,5 +117,5 @@ docker compose down
 E2E-Tests laufen in WSL mit lokalem Docker:
 
 ```bash
-./scripts/test_e2e.sh
+./1.21.11/scripts/test_e2e.sh
 ```
