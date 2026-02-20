@@ -205,3 +205,21 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# --- Minecraft runtime data (persistent bind mounts) ---
+minecraft/world/*
+!minecraft/world/.gitkeep
+minecraft/logs/*
+!minecraft/logs/.gitkeep
+minecraft/mods/*
+!minecraft/mods/.gitkeep
+minecraft/resourcepacks/*
+!minecraft/resourcepacks/.gitkeep
+minecraft/config/*
+!minecraft/config/.gitkeep
+minecraft/crash-reports/
+minecraft/libraries/
+minecraft/cache/
+
+# Local compose secrets/config
+.env
+!.env.example
