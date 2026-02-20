@@ -1,5 +1,5 @@
 x-minecraft-common: &minecraft-common
-  image: ${IMAGE_NAME:-minecraft-java}:${IMAGE_TAG:-1.21.11}
+  image: minecraft-java:1.21.11
   container_name: ${CONTAINER_NAME:-minecraft-java}
   environment: &minecraft-environment
     EULA: "${EULA:-FALSE}"
@@ -9,11 +9,11 @@ x-minecraft-common: &minecraft-common
     RCON_PASSWORD: "${RCON_PASSWORD:-}"
     RCON_PORT: "${RCON_PORT:-25575}"
   volumes: &minecraft-volumes
-    - ./minecraft/config:/data/config
-    - ./minecraft/world:/data/world
-    - ./minecraft/mods:/data/mods
-    - ./minecraft/resourcepacks:/data/resourcepacks
-    - ./minecraft/logs:/data/logs
+    - ./1.21.11/minecraft/config:/data/config
+    - ./1.21.11/minecraft/world:/data/world
+    - ./1.21.11/minecraft/mods:/data/mods
+    - ./1.21.11/minecraft/resourcepacks:/data/resourcepacks
+    - ./1.21.11/minecraft/logs:/data/logs
   restart: ${RESTART_POLICY:-unless-stopped}
 
 services:
@@ -23,12 +23,7 @@ services:
     tty: true
     build:
       context: .
-      args:
-        MC_VERSION: ${MC_VERSION:-1.21.11}
-        FABRIC_LOADER_VERSION: ${FABRIC_LOADER_VERSION:-auto}
-        FABRIC_INSTALLER_VERSION: ${FABRIC_INSTALLER_VERSION:-auto}
-        FORGE_VERSION: ${FORGE_VERSION:-auto}
-        NEOFORGE_VERSION: ${NEOFORGE_VERSION:-auto}
+      dockerfile: ./1.21.11/Dockerfile
     ports:
       - "${MC_PORT:-25565}:25565"
 
