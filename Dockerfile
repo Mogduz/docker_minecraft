@@ -126,7 +126,9 @@ RUN curl_common=(--fail --location --silent --show-error --retry 3 --connect-tim
       "NEOFORGE_VERSION=${NEOFORGE_VERSION}" > /opt/minecraft/versions.env
 
 RUN useradd -r -m -d /data -s /usr/sbin/nologin minecraft \
-    && chown -R minecraft:minecraft /opt/minecraft /data
+    && chown -R minecraft:minecraft /opt/minecraft /data \
+    && touch /run/minecraft.pid \
+    && chown minecraft:minecraft /run/minecraft.pid
 
 COPY start-minecraft.sh /usr/local/bin/start-minecraft.sh
 COPY mc-cmd.sh /usr/local/bin/mc-cmd
