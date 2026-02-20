@@ -220,6 +220,5 @@ minecraft/crash-reports/
 minecraft/libraries/
 minecraft/cache/
 
-# Local compose secrets/config
-.env
+# Local compose config template
 !.env.example
