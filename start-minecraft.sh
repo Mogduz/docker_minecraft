@@ -49,8 +49,10 @@ upsert_property() {
   awk -F= -v k="$key" -v v="$value" '
     BEGIN { updated = 0 }
     $1 == k {
-      print k "=" v
-      updated = 1
+      if (updated == 0) {
+        print k "=" v
+        updated = 1
+      }
       next
     }
     { print }
