@@ -92,9 +92,9 @@ RUN useradd -r -m -d /data -s /usr/sbin/nologin minecraft \
     && touch /run/minecraft.pid \
     && chown minecraft:minecraft /run/minecraft.pid
 
-COPY ${MC_VERSION}/scripts/start-minecraft.sh /usr/local/bin/start-minecraft.sh
-COPY ${MC_VERSION}/scripts/mc-cmd.sh /usr/local/bin/mc-cmd
-COPY ${MC_VERSION}/scripts/healthcheck.sh /usr/local/bin/healthcheck.sh
+COPY 1.21.11/scripts/start-minecraft.sh /usr/local/bin/start-minecraft.sh
+COPY 1.21.11/scripts/mc-cmd.sh /usr/local/bin/mc-cmd
+COPY 1.21.11/scripts/healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/start-minecraft.sh /usr/local/bin/mc-cmd /usr/local/bin/healthcheck.sh
 RUN for c in \
       help stop reload list say seed me msg teammsg tm tell w \
