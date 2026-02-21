@@ -59,15 +59,9 @@ Kompatibilitaet zu Vanilla `1.21.11`:
 - Forge: kompatibel und stabil
 - NeoForge: kompatibel, fuer die `21.11.x`-Reihe aktuell nur `beta`-Builds verfuegbar
 
-## RCON (optional, per Profil)
+## RCON (optional)
 
-Standardmaessig ist kein zusaetzlicher RCON-Port nach aussen offen.
-
-RCON mit Port-Freigabe aktivieren:
-
-```bash
-docker compose --profile rcon up -d --build
-```
+Der RCON-Port ist direkt im `minecraft`-Service gemappt (`${RCON_PORT:-25575}:25575`).
 
 Dafuer in `.env` mindestens setzen:
 
@@ -75,19 +69,21 @@ Dafuer in `.env` mindestens setzen:
 - `RCON_PASSWORD=<dein-passwort>`
 - optional `RCON_PORT=25575`
 
+Wenn spaeter kein direkter Port-Expose gewuenscht ist (z. B. nur Zugriff ueber Reverse Proxy), entferne die `ports`-Eintraege im `minecraft`-Service in deiner Compose-Variante.
+
 `mc-cmd` nutzt automatisch RCON, wenn `RCON_ENABLED=TRUE`, `RCON_PASSWORD` gesetzt ist und `mcrcon` im Container verfuegbar ist. Sonst faellt es auf den bisherigen STDIN-Mechanismus zurueck.
 
 ## Persistente Daten
 
 Bind-Mounts:
 
-- `./1.21.11/minecraft/...`
+- `./minecraft/...`
 - `./1.21.11/scripts/...`
 
 Empfohlene Repo-Hygiene:
 
-- Persistente Laufzeitdaten unter `<version>/minecraft/` sind in `.gitignore` ausgenommen.
-- Auch `<version>/minecraft/config` ist ignoriert (enthaelt benutzerspezifische Daten wie `server.properties`, `ops.json`, Whitelist, usw.).
+- Persistente Laufzeitdaten unter `minecraft/` sind in `.gitignore` ausgenommen.
+- Auch `minecraft/config` ist ignoriert (enthaelt benutzerspezifische Daten wie `server.properties`, `ops.json`, Whitelist, usw.).
 - Nur `.gitkeep`-Dateien bleiben versioniert, damit die Ordnerstruktur erhalten bleibt.
 - `.env` bleibt lokal und wird nicht eingecheckt.
 - `.env.example` ist die versionierte Vorlage.
