@@ -99,7 +99,7 @@ JAVA_ARGS="${JVM_OPTS:-"-Xms1G -Xmx2G"}"
 read -r -a JAVA_ARGS_ARR <<< "$JAVA_ARGS"
 
 SERVER_PID=""
-STDIN_PIPE="/run/minecraft.stdin"
+STDIN_PIPE="/tmp/minecraft.stdin"
 
 start_server() {
   rm -f "$STDIN_PIPE"
