@@ -1,9 +1,0 @@
-services:
-  minecraft:
-    ports: []
-    volumes:
-      - ./.tmp/minecraft/config:/data/config
-      - ./.tmp/minecraft/world:/data/world
-      - ./.tmp/minecraft/mods:/data/mods
-      - ./.tmp/minecraft/resourcepacks:/data/resourcepacks
-      - ./.tmp/minecraft/logs:/data/logs
