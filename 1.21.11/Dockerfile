@@ -13,6 +13,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        gosu \
         jq \
         openjdk-21-jre-headless \
         tini \
@@ -93,9 +94,10 @@ RUN useradd -r -m -d /data -s /usr/sbin/nologin minecraft \
     && chown minecraft:minecraft /run/minecraft.pid
 
 COPY 1.21.11/scripts/start-minecraft.sh /usr/local/bin/start-minecraft.sh
+COPY 1.21.11/scripts/container-entrypoint.sh /usr/local/bin/container-entrypoint.sh
 COPY 1.21.11/scripts/mc-cmd.sh /usr/local/bin/mc-cmd
 COPY 1.21.11/scripts/healthcheck.sh /usr/local/bin/healthcheck.sh
-RUN chmod +x /usr/local/bin/start-minecraft.sh /usr/local/bin/mc-cmd /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/start-minecraft.sh /usr/local/bin/container-entrypoint.sh /usr/local/bin/mc-cmd /usr/local/bin/healthcheck.sh
 RUN for c in \
       help stop reload list say seed me msg teammsg tm tell w \
       ban ban-ip banlist pardon pardon-ip kick op deop \
@@ -114,7 +116,6 @@ RUN for c in \
       ln -sfn /usr/local/bin/mc-cmd "/usr/local/bin/$c"; \
     done
 
-USER minecraft
 WORKDIR /data
 
 EXPOSE 25565
@@ -122,5 +123,5 @@ VOLUME ["/data/config", "/data/world", "/data/mods", "/data/resourcepacks", "/da
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 CMD ["/usr/local/bin/healthcheck.sh"]
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/container-entrypoint.sh"]
 CMD ["/usr/local/bin/start-minecraft.sh"]
