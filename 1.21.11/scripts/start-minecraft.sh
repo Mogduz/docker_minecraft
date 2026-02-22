@@ -100,6 +100,16 @@ read -r -a JAVA_ARGS_ARR <<< "$JAVA_ARGS"
 
 SERVER_PID=""
 STDIN_PIPE="/tmp/minecraft.stdin"
+CONTAINER_STDOUT="/proc/1/fd/1"
+CONTAINER_STDERR="/proc/1/fd/2"
+
+if [[ ! -w "$CONTAINER_STDOUT" ]]; then
+  CONTAINER_STDOUT="/proc/self/fd/1"
+fi
+
+if [[ ! -w "$CONTAINER_STDERR" ]]; then
+  CONTAINER_STDERR="/proc/self/fd/2"
+fi
 
 start_server() {
   rm -f "$STDIN_PIPE"
@@ -109,23 +119,23 @@ start_server() {
   case "$SERVER_TYPE" in
     vanilla)
       cd /data
-      java "${JAVA_ARGS_ARR[@]}" -jar /opt/minecraft/dist/vanilla-server.jar nogui <&3 &
+      java "${JAVA_ARGS_ARR[@]}" -jar /opt/minecraft/dist/vanilla-server.jar nogui <&3 >"$CONTAINER_STDOUT" 2>"$CONTAINER_STDERR" &
       ;;
     fabric)
       cd /data
-      java "${JAVA_ARGS_ARR[@]}" -jar /opt/minecraft/dist/fabric-server.jar nogui <&3 &
+      java "${JAVA_ARGS_ARR[@]}" -jar /opt/minecraft/dist/fabric-server.jar nogui <&3 >"$CONTAINER_STDOUT" 2>"$CONTAINER_STDERR" &
       ;;
     forge)
       link_runtime_paths /opt/minecraft/runtimes/forge
       cd /opt/minecraft/runtimes/forge
       printf '%s\n' "$JAVA_ARGS" > user_jvm_args.txt
-      ./run.sh nogui <&3 &
+      ./run.sh nogui <&3 >"$CONTAINER_STDOUT" 2>"$CONTAINER_STDERR" &
       ;;
     neoforge)
       link_runtime_paths /opt/minecraft/runtimes/neoforge
       cd /opt/minecraft/runtimes/neoforge
       printf '%s\n' "$JAVA_ARGS" > user_jvm_args.txt
-      ./run.sh nogui <&3 &
+      ./run.sh nogui <&3 >"$CONTAINER_STDOUT" 2>"$CONTAINER_STDERR" &
       ;;
     *)
       echo "Unbekannter SERVER_TYPE: ${SERVER_TYPE}. Erlaubt: vanilla, fabric, forge, neoforge"
