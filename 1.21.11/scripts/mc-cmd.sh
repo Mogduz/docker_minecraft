@@ -42,7 +42,7 @@ if ! kill -0 "$server_pid" 2>/dev/null; then
 fi
 
 stdin_path="/proc/${server_pid}/fd/0"
-stdin_pipe="/run/minecraft.stdin"
+stdin_pipe="/tmp/minecraft.stdin"
 
 if [[ -w "$stdin_path" ]]; then
   if ! printf '%s\n' "$cmd" > "$stdin_path"; then
