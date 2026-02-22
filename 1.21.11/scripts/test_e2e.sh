@@ -6,9 +6,10 @@ REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 cd "$REPO_ROOT"
 
 PROJECT_NAME="codex_e2e"
-TEST_ENV_FILE="1.21.11/.env.test"
+MAIN_COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
+TEST_ENV_FILE="${REPO_ROOT}/.env"
 TEST_CONTAINER_NAME="minecraft-java-e2e"
-COMPOSE_FILES=(-f docker-compose.yml -f docker-compose.test.yml)
+COMPOSE_FILES=(-f "$MAIN_COMPOSE_FILE")
 COMPOSE_BASE=(docker compose "${COMPOSE_FILES[@]}" --env-file "$TEST_ENV_FILE" -p "$PROJECT_NAME")
 KEEP_TMP_ON_FAILURE=1
 CURRENT_SERVER_TYPE="vanilla"
@@ -32,6 +33,7 @@ ALIASES=(
   particle damage ride tag attribute data
   worldborder
 )
+ALIAS_PROBES=(list say)
 
 compose() {
   SERVER_TYPE="$CURRENT_SERVER_TYPE" \
@@ -100,6 +102,27 @@ wait_for_log_message() {
   done
 }
 
+wait_for_container_log_message() {
+  local message="$1"
+  local timeout_seconds="$2"
+  local start_ts
+  start_ts="$(date +%s)"
+
+  while true; do
+    if docker logs "$TEST_CONTAINER_NAME" --tail 400 2>&1 | grep -F "$message" >/dev/null 2>&1; then
+      return 0
+    fi
+
+    if (( "$(date +%s)" - start_ts >= timeout_seconds )); then
+      echo "Timeout: Container-Log-Meldung nicht gefunden: $message" >&2
+      print_failure_diagnostics
+      return 1
+    fi
+
+    sleep 2
+  done
+}
+
 prepare_tmp() {
   mkdir -p .tmp/minecraft/config .tmp/minecraft/world .tmp/minecraft/mods .tmp/minecraft/resourcepacks .tmp/minecraft/logs
 }
@@ -143,6 +166,7 @@ run_loader_test() {
   compose up -d
   wait_for_healthy 600
   test_aliases
+  test_integrated_alias_execution "$loader" "$rcon_enabled"
   set +e
   timeout 30 docker exec "$TEST_CONTAINER_NAME" mc-cmd "say $log_marker"
   cmd_rc=$?
@@ -175,6 +199,39 @@ test_aliases() {
     print_failure_diagnostics
     return 1
   fi
+}
+
+test_integrated_alias_execution() {
+  local loader="$1"
+  local rcon_enabled="$2"
+  local mode_label="stdin"
+  local alias_marker="codex-alias-${loader}-stdin"
+
+  if [[ "$rcon_enabled" == "true" ]]; then
+    mode_label="rcon"
+    alias_marker="codex-alias-${loader}-rcon"
+  fi
+
+  for alias_name in "${ALIAS_PROBES[@]}"; do
+    local cmd_rc
+    set +e
+    if [[ "$alias_name" == "say" ]]; then
+      timeout 30 docker exec "$TEST_CONTAINER_NAME" "$alias_name" "$alias_marker"
+    else
+      timeout 30 docker exec "$TEST_CONTAINER_NAME" "$alias_name"
+    fi
+    cmd_rc=$?
+    set -e
+
+    if [[ "$cmd_rc" -ne 0 && "$cmd_rc" -ne 124 ]]; then
+      echo "Alias-Test fehlgeschlagen (Alias: ${alias_name}, Exit: ${cmd_rc}, Modus: ${mode_label})." >&2
+      print_failure_diagnostics
+      return 1
+    fi
+  done
+
+  wait_for_log_message "$alias_marker" 120
+  wait_for_container_log_message "$alias_marker" 120
 }
 
 require_test_env_file
