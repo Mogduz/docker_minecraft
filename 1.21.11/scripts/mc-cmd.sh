@@ -42,12 +42,23 @@ if ! kill -0 "$server_pid" 2>/dev/null; then
 fi
 
 stdin_path="/proc/${server_pid}/fd/0"
-if [[ ! -w "$stdin_path" ]]; then
-  echo "STDIN nicht beschreibbar (${stdin_path}). Nutze RCON oder aktiviere stdin_open/tty in Compose." >&2
-  exit 1
+stdin_pipe="/run/minecraft.stdin"
+
+if [[ -w "$stdin_path" ]]; then
+  if ! printf '%s\n' "$cmd" > "$stdin_path"; then
+    echo "Befehl konnte nicht an Minecraft-STDIN gesendet werden (${stdin_path}). Nutze RCON als Fallback." >&2
+    exit 1
+  fi
+  exit 0
 fi
 
-if ! printf '%s\n' "$cmd" > "$stdin_path"; then
-  echo "Befehl konnte nicht an Minecraft-STDIN gesendet werden (${stdin_path}). Nutze RCON als Fallback." >&2
-  exit 1
+if [[ -p "$stdin_pipe" && -w "$stdin_pipe" ]]; then
+  if ! printf '%s\n' "$cmd" > "$stdin_pipe"; then
+    echo "Befehl konnte nicht an Minecraft-FIFO gesendet werden (${stdin_pipe}). Nutze RCON als Fallback." >&2
+    exit 1
+  fi
+  exit 0
 fi
+
+echo "STDIN nicht beschreibbar (${stdin_path}) und FIFO nicht verfuegbar (${stdin_pipe}). Nutze RCON oder aktiviere stdin_open/tty in Compose." >&2
+exit 1
